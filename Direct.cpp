@@ -11,30 +11,12 @@ void Direct::run() {
 }
 
 void Direct::check_cache(instr cmd) {
-  uint64_t tag = cmd.second >> 5;
+  uint32_t tag = cmd.second >> 5;
   auto &entry = cache_.at(tag % cache_capacity_);
-  uint64_t cur = entry.second >> 5;
-  if (cmd.first) {  // Is store
-    if (tag == cur) {
-      hits_++;
-      entry.first = true;
-    } else {
-      misses_++;
-      entry.second = cmd.second;
-      entry.first = true;
-    }
+  if (tag == entry) {
+    hits_++;
   } else {
-    if (tag == cur) {
-      if (entry.first) {  // Cache hit
-        hits_++;
-      } else {
-        misses_++;
-        entry.first = true;
-      }
-    } else {  // Cache miss
-      misses_++;
-      entry.second = cmd.second;
-      entry.first = true;
-    }
+    misses_++;
+    entry = tag;
   }
 }

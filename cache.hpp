@@ -4,6 +4,7 @@
 #define CACHE_HPP_
 
 #include <cstdint>
+#include <cmath>
 #include <vector>
 #include <utility>
 
@@ -14,8 +15,8 @@ class Cache {
   explicit Cache(const std::vector<instr>& trace)
       : hits_(0), misses_(0), trace_(trace) {}
   virtual void run() {}
-  int32_t hits_;
-  int32_t misses_;
+  uint64_t hits_;
+  uint64_t misses_;
 
  protected:
   const std::vector<instr>& trace_;
@@ -23,19 +24,75 @@ class Cache {
 
 class Direct : public Cache {
  public:
-  Direct(const std::vector<instr>& trace, int32_t size)
+  Direct(const std::vector<instr>& trace, uint32_t size)
       : Cache(trace),
         cache_size_(size),
         cache_capacity_(size / 32),
-        cache_(cache_capacity_, instr(false, 0x0)) {
-    std::cout << cache_capacity_ << " " << cache_size_ << std::endl;
+        cache_(cache_capacity_, -1) {}
+  void run() override;
+
+ protected:
+  void check_cache(instr);
+  uint32_t cache_size_;
+  uint32_t cache_capacity_;
+  std::vector<uint32_t> cache_;
+};
+
+class Set {
+ public:
+  explicit Set(int32_t size)
+      : cache_capacity_(size), global_counter_(0), cache_(size, lruaddr(0, 0)) {
+    std::cout << cache_.size() << std::endl;
+  }
+  bool check_cache(uint32_t);
+  void replace(uint32_t);
+
+ protected:
+  typedef std::pair<uint64_t, uint32_t> lruaddr;
+  uint32_t cache_capacity_;
+  uint32_t global_counter_;
+  std::vector<std::pair<uint64_t, uint32_t> > cache_;
+};
+
+class SetAssociative : public Cache {
+ public:
+  SetAssociative(const std::vector<instr>& trace, uint32_t assoc)
+      : Cache(trace),
+        set_count_((cache_size_ / 32) / assoc),
+        sets_(set_count_, Set(32 * assoc)),
+        lg_set_(log2(set_count_)) {
+    std::cout << "num sets " << set_count_ << std::endl;
   }
   void run() override;
 
  protected:
   void check_cache(instr);
-  int32_t cache_size_;
-  int32_t cache_capacity_;
-  std::vector<instr> cache_;
+  inline uint32_t compute_tag(uint32_t);
+  inline uint16_t compute_set(uint32_t);
+  const uint32_t cache_size_ = 16 * 1024;
+  uint16_t set_count_;
+  std::vector<Set> sets_;
+  uint16_t lg_set_;
 };
+
+class FullyAssociative : public Cache {
+ public:
+  explicit FullyAssociative(const std::vector<instr>& trace)
+      : Cache(trace), cache_((16 * 1024) / 32, hot_addr(false, 0)) {
+    initialize();
+  }
+  void run() override;
+
+ protected:
+  typedef std::pair<bool, uint32_t> hot_addr;
+  void check_cache(uint32_t);
+  void access(uint32_t);
+  void initialize();
+  void heat_up(uint32_t);
+  uint32_t find_victim();
+  void replace(uint32_t);
+  inline uint32_t compute_tag(uint32_t);
+  std::vector<hot_addr> cache_;
+};
+
 #endif  // CACHE_HPP_
