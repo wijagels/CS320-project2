@@ -1,6 +1,6 @@
 /* Copyright 2016 William Jagels */
 
-#include "cache.hpp"
+#include "SetAssociative.hpp"
 
 void SetAssociative::run() {
   for (auto cmd : trace_) {
@@ -10,12 +10,29 @@ void SetAssociative::run() {
 
 void SetAssociative::check_cache(instr cmd) {
   uint32_t tag = compute_tag(cmd.second);
-  uint16_t set = compute_set(cmd.second);
-  bool result = sets_.at(set).check_cache(tag);
-  if (result)
+  bool result = check_tag(tag, cmd.first, true);
+  if (result) {
     hits_++;
-  else
+  } else {
     misses_++;
+  }
+}
+
+bool SetAssociative::check_tag(uint32_t tag, bool type, bool first) {
+  uint16_t set = compute_set(tag);
+  bool result;
+  if (type && no_write_)
+    result = sets_.at(set).check_cache(tag, false);
+  else
+    result = sets_.at(set).check_cache(tag, true);
+  if (first) {
+    if (result) {
+      if (prefetch_ && !on_miss_) check_tag(tag + 1, false, false);
+    } else {
+      if (prefetch_) check_tag(tag + 1, false, false);
+    }
+  }
+  return result;
 }
 
 /*
@@ -29,7 +46,7 @@ unsigned createMask(uint32_t a, uint32_t b) {
 }
 
 inline uint32_t SetAssociative::compute_tag(uint32_t addr) {
-  return (addr >> 5) & createMask(lg_set_, 27);
+  return ((addr >> 5) & createMask(lg_set_, 27));
 }
 
 inline uint16_t SetAssociative::compute_set(uint32_t addr) {

@@ -1,6 +1,6 @@
 /* Copyright 2016 William Jagels */
 
-#include "cache.hpp"
+#include "FullyAssociative.hpp"
 
 void FullyAssociative::run() {
   for (auto cmd : trace_) {

@@ -1,7 +1,7 @@
 /* Copyright 2016 William Jagels */
 #include <cstdint>
 
-#include "cache.hpp"
+#include "Direct.hpp"
 
 void Direct::run() {
   for (auto cmd : trace_) {

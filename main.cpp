@@ -8,6 +8,9 @@
 
 #include "main.hpp"
 #include "cache.hpp"
+#include "Direct.hpp"
+#include "SetAssociative.hpp"
+#include "FullyAssociative.hpp"
 
 using std::string;
 
@@ -46,4 +49,25 @@ int main(int argc, char *argv[]) {
   FullyAssociative fa(v);
   fa.run();
   std::cout << fa.hits_ << "," << fa.hits_ + fa.misses_ << ";" << std::endl;
+  for (auto i : {2, 4, 8, 16}) {
+    SetAssociative sa = SetAssociative(v, i, false, true, false);
+    sa.run();
+    if (i != 2) std::cout << " ";
+    std::cout << sa.hits_ << "," << sa.hits_ + sa.misses_ << ";";
+  }
+  std::cout << std::endl;
+  for (auto i : {2, 4, 8, 16}) {
+    SetAssociative sa = SetAssociative(v, i, true, false, false);
+    sa.run();
+    if (i != 2) std::cout << " ";
+    std::cout << sa.hits_ << "," << sa.hits_ + sa.misses_ << ";";
+  }
+  std::cout << std::endl;
+  for (auto i : {2, 4, 8, 16}) {
+    SetAssociative sa = SetAssociative(v, i, true, false, true);
+    sa.run();
+    if (i != 2) std::cout << " ";
+    std::cout << sa.hits_ << "," << sa.hits_ + sa.misses_ << ";";
+  }
+  std::cout << std::endl;
 }

@@ -4,14 +4,14 @@
 
 #include "cache.hpp"
 
-bool Set::check_cache(uint32_t tag) {
+bool Set::check_cache(uint32_t tag, bool repl) {
   for (auto& e : cache_) {
     if (e.second == tag) {
       e.first = ++global_counter_;
       return true;
     }
   }
-  this->replace(tag);
+  if (repl) this->replace(tag);
   return false;
 }
 
