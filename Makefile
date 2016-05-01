@@ -1,5 +1,5 @@
 CFLAGS=-c -g -Wall -std=c11
-CXXFLAGS=-c -g -O3 -Wall -Wextra -std=c++11
+CXXFLAGS=-c -g -O3 -Wall -Wextra -pedantic -std=c++11
 LDFLAGS=-pthread
 SRCEXT=cpp
 HEADEREXT=hpp
