@@ -11,14 +11,16 @@ void FullyAssociative::run() {
 void FullyAssociative::check_cache(uint32_t tag) {
   for (size_t i = 0; i < cache_.size(); i++) {
     if (cache_.at(i).second == tag) {
+      access(i);
       hits_++;
-      heat_up(i);
       return;
     }
   }
   replace(tag);
   misses_++;
 }
+
+void FullyAssociative::access(uint32_t loc) { heat_up(loc); }
 
 void FullyAssociative::initialize() {
   std::cout << cache_.size() << std::endl;
@@ -40,6 +42,7 @@ void FullyAssociative::heat_up(uint32_t loc) {
       cache_.at(cur).first = false;
     }
   }
+  // At destination
   if (cur < loc) {
     cache_.at(cur).first = true;
   } else {
@@ -58,6 +61,7 @@ uint32_t FullyAssociative::find_victim() {
       begin = cur;
     }
   }
+  // Now at a leaf node
   if (cache_.at(cur).first) {
     return cur;
   } else {
@@ -69,9 +73,20 @@ void FullyAssociative::replace(uint32_t tag) {
   uint32_t victim = find_victim();
   // std::cout << "Victim way #" << victim << std::endl;
   cache_.at(victim).second = tag;
-  heat_up(victim);
+  access(victim);
 }
 
 inline uint32_t FullyAssociative::compute_tag(uint32_t addr) {
   return addr >> 5;
+}
+
+void FullyAssociativeTrue::run() {
+  for (auto cmd : trace_) {
+    bool res = cache_.check_cache(FullyAssociative::compute_tag(cmd.second));
+    if (res) {
+      hits_++;
+    } else {
+      misses_++;
+    }
+  }
 }

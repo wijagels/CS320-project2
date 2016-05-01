@@ -41,7 +41,9 @@ class Direct : public Cache {
 class Set {
  public:
   explicit Set(int32_t size)
-      : cache_capacity_(size), global_counter_(0), cache_(size, lruaddr(0, 0)) {
+      : cache_capacity_(size),
+        global_counter_(0),
+        cache_(cache_capacity_, lruaddr(0, 0)) {
     std::cout << cache_.size() << std::endl;
   }
   bool check_cache(uint32_t);
@@ -50,8 +52,8 @@ class Set {
  protected:
   typedef std::pair<uint64_t, uint32_t> lruaddr;
   uint32_t cache_capacity_;
-  uint32_t global_counter_;
-  std::vector<std::pair<uint64_t, uint32_t> > cache_;
+  uint64_t global_counter_;
+  std::vector<lruaddr> cache_;
 };
 
 class SetAssociative : public Cache {
@@ -82,6 +84,7 @@ class FullyAssociative : public Cache {
     initialize();
   }
   void run() override;
+  static inline uint32_t compute_tag(uint32_t);
 
  protected:
   typedef std::pair<bool, uint32_t> hot_addr;
@@ -91,8 +94,17 @@ class FullyAssociative : public Cache {
   void heat_up(uint32_t);
   uint32_t find_victim();
   void replace(uint32_t);
-  inline uint32_t compute_tag(uint32_t);
   std::vector<hot_addr> cache_;
+};
+
+class FullyAssociativeTrue : public Cache {
+ public:
+  explicit FullyAssociativeTrue(const std::vector<instr>& trace)
+      : Cache(trace), cache_((16 * 1024) / 32) {}
+  void run() override;
+
+ protected:
+  Set cache_;
 };
 
 #endif  // CACHE_HPP_

@@ -1,5 +1,7 @@
 /* Copyright 2016 William Jagels */
 
+#include <algorithm>
+
 #include "cache.hpp"
 
 bool Set::check_cache(uint32_t tag) {
@@ -14,13 +16,14 @@ bool Set::check_cache(uint32_t tag) {
 }
 
 void Set::replace(uint32_t tag) {
-  auto& min = cache_.front();
-  for (auto& e : cache_) {
-    if (e.first < min.first) {
-      min = e;
-      if (min.first == 0) break;
-    }
-  }
-  min.first = ++global_counter_;
-  min.second = tag;
+  // auto& min = cache_.front();
+  // for (auto& e : cache_) {
+  //   if (e.first < min.first) {
+  //     min = e;
+  //     if (min.first == 0) break;
+  //   }
+  // }
+  auto min = std::min_element(cache_.begin(), cache_.end());
+  min->first = ++global_counter_;
+  min->second = tag;
 }

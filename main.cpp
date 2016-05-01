@@ -41,9 +41,9 @@ int main(int argc, char *argv[]) {
     std::cout << sa.hits_ << "," << sa.hits_ + sa.misses_ << ";";
   }
   std::cout << std::endl;
-  SetAssociative sa(v, 1);
-  sa.run();
-  std::cout << sa.hits_ << "," << sa.hits_ + sa.misses_ << ";" << std::endl;
+  FullyAssociativeTrue fat(v);
+  fat.run();
+  std::cout << fat.hits_ << "," << fat.hits_ + fat.misses_ << ";" << std::endl;
   FullyAssociative fa(v);
   fa.run();
   std::cout << fa.hits_ << "," << fa.hits_ + fa.misses_ << ";" << std::endl;
