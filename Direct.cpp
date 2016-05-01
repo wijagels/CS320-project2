@@ -6,7 +6,6 @@
 void Direct::run() {
   for (auto cmd : trace_) {
     check_cache(cmd);
-    // std::cout << cmd.second << std::endl;
   }
 }
 

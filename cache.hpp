@@ -43,9 +43,7 @@ class Set {
   explicit Set(int32_t size)
       : cache_capacity_(size),
         global_counter_(0),
-        cache_(cache_capacity_, lruaddr(0, 0)) {
-    std::cout << cache_.size() << std::endl;
-  }
+        cache_(cache_capacity_, lruaddr(0, 0)) {}
   bool check_cache(uint32_t);
   void replace(uint32_t);
 
@@ -61,10 +59,8 @@ class SetAssociative : public Cache {
   SetAssociative(const std::vector<instr>& trace, uint32_t assoc)
       : Cache(trace),
         set_count_((cache_size_ / 32) / assoc),
-        sets_(set_count_, Set(32 * assoc)),
-        lg_set_(log2(set_count_)) {
-    std::cout << "num sets " << set_count_ << std::endl;
-  }
+        sets_(set_count_, Set(assoc)),
+        lg_set_(log2(set_count_)) {}
   void run() override;
 
  protected:

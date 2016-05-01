@@ -16,14 +16,10 @@ bool Set::check_cache(uint32_t tag) {
 }
 
 void Set::replace(uint32_t tag) {
-  // auto& min = cache_.front();
-  // for (auto& e : cache_) {
-  //   if (e.first < min.first) {
-  //     min = e;
-  //     if (min.first == 0) break;
-  //   }
-  // }
-  auto min = std::min_element(cache_.begin(), cache_.end());
+  auto min = std::min_element(
+      cache_.begin(), cache_.end(),
+      [](lruaddr a, lruaddr b) -> bool { return a.first < b.first; });
+  // C++11 4 lyfe
   min->first = ++global_counter_;
   min->second = tag;
 }

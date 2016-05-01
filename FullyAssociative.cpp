@@ -23,7 +23,6 @@ void FullyAssociative::check_cache(uint32_t tag) {
 void FullyAssociative::access(uint32_t loc) { heat_up(loc); }
 
 void FullyAssociative::initialize() {
-  std::cout << cache_.size() << std::endl;
   for (size_t i = 0; i < cache_.size(); i++) {
     replace(0);
   }
@@ -71,7 +70,6 @@ uint32_t FullyAssociative::find_victim() {
 
 void FullyAssociative::replace(uint32_t tag) {
   uint32_t victim = find_victim();
-  // std::cout << "Victim way #" << victim << std::endl;
   cache_.at(victim).second = tag;
   access(victim);
 }

@@ -26,7 +26,6 @@ int main(int argc, char *argv[]) {
     s >> std::hex >> behavior >> addr;
     v.push_back(instr(behavior == "S", addr));
   }
-  std::cout << v.size() << std::endl;
   for (auto i : {1, 4, 16, 32}) {
     Direct d = Direct(v, 1024 * i);
     d.run();

@@ -6,7 +6,6 @@ void SetAssociative::run() {
   for (auto cmd : trace_) {
     this->check_cache(cmd);
   }
-  // for (auto set : sets_) std::cout << set.global_counter_ << std::endl;
 }
 
 void SetAssociative::check_cache(instr cmd) {
@@ -19,16 +18,20 @@ void SetAssociative::check_cache(instr cmd) {
     misses_++;
 }
 
-unsigned createMask(unsigned a, unsigned b) {
-  unsigned r = 0;
-  for (unsigned i = a; i <= b; i++) r |= 1 << i;
+/*
+ * Adapted from
+ * http://stackoverflow.com/a/8012232/1666415
+ */
+unsigned createMask(uint32_t a, uint32_t b) {
+  uint32_t r = 0;
+  for (uint32_t i = a; i <= b; i++) r |= 1 << i;
   return r;
 }
 
 inline uint32_t SetAssociative::compute_tag(uint32_t addr) {
-  return (addr >> 5) & createMask(lg_set_ + 1, 27);
+  return (addr >> 5) & createMask(lg_set_, 27);
 }
 
 inline uint16_t SetAssociative::compute_set(uint32_t addr) {
-  return (addr >> (5 + lg_set_)) % set_count_;
+  return (addr >> 5) & createMask(0, lg_set_ - 1);
 }
