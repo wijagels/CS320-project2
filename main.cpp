@@ -19,6 +19,8 @@ int main(int argc, char *argv[]) {
     std::cerr << "Invalid argument size" << std::endl;
     return 1;
   }
+  std::ofstream os;
+  os.open(argv[2]);
   uint64_t addr;
   string behavior, line;
   std::ifstream infile(argv[1]);
@@ -32,42 +34,42 @@ int main(int argc, char *argv[]) {
   for (auto i : {1, 4, 16, 32}) {
     Direct d = Direct(v, 1024 * i);
     d.run();
-    if (i != 1) std::cout << " ";
-    std::cout << d.hits_ << "," << d.hits_ + d.misses_ << ";";
+    if (i != 1) os << " ";
+    os << d.hits_ << "," << d.hits_ + d.misses_ << ";";
   }
-  std::cout << std::endl;
+  os << std::endl;
   for (auto i : {2, 4, 8, 16}) {
     SetAssociative sa = SetAssociative(v, i);
     sa.run();
-    if (i != 2) std::cout << " ";
-    std::cout << sa.hits_ << "," << sa.hits_ + sa.misses_ << ";";
+    if (i != 2) os << " ";
+    os << sa.hits_ << "," << sa.hits_ + sa.misses_ << ";";
   }
-  std::cout << std::endl;
+  os << std::endl;
   FullyAssociativeTrue fat(v);
   fat.run();
-  std::cout << fat.hits_ << "," << fat.hits_ + fat.misses_ << ";" << std::endl;
+  os << fat.hits_ << "," << fat.hits_ + fat.misses_ << ";" << std::endl;
   FullyAssociative fa(v);
   fa.run();
-  std::cout << fa.hits_ << "," << fa.hits_ + fa.misses_ << ";" << std::endl;
+  os << fa.hits_ << "," << fa.hits_ + fa.misses_ << ";" << std::endl;
   for (auto i : {2, 4, 8, 16}) {
     SetAssociative sa = SetAssociative(v, i, false, true, false);
     sa.run();
-    if (i != 2) std::cout << " ";
-    std::cout << sa.hits_ << "," << sa.hits_ + sa.misses_ << ";";
+    if (i != 2) os << " ";
+    os << sa.hits_ << "," << sa.hits_ + sa.misses_ << ";";
   }
-  std::cout << std::endl;
+  os << std::endl;
   for (auto i : {2, 4, 8, 16}) {
     SetAssociative sa = SetAssociative(v, i, true, false, false);
     sa.run();
-    if (i != 2) std::cout << " ";
-    std::cout << sa.hits_ << "," << sa.hits_ + sa.misses_ << ";";
+    if (i != 2) os << " ";
+    os << sa.hits_ << "," << sa.hits_ + sa.misses_ << ";";
   }
-  std::cout << std::endl;
+  os << std::endl;
   for (auto i : {2, 4, 8, 16}) {
     SetAssociative sa = SetAssociative(v, i, true, false, true);
     sa.run();
-    if (i != 2) std::cout << " ";
-    std::cout << sa.hits_ << "," << sa.hits_ + sa.misses_ << ";";
+    if (i != 2) os << " ";
+    os << sa.hits_ << "," << sa.hits_ + sa.misses_ << ";";
   }
-  std::cout << std::endl;
+  os << std::endl;
 }
